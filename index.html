@@ -23,7 +23,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold text-slate-100">BioSlide Annotator</h1>
-                <p class="text-xs text-slate-400">Interactive Microscopy Labeling</p>
+                <p class="text-xs text-slate-400">เครื่องมือทำเครื่องหมายภาพตัวอย่างจากกล้องจุลทรรศน์แบบอินเทอร์แอกทีฟ</p>
             </div>
         </div>
         
@@ -31,7 +31,7 @@
             <button id="btn-export" class="hide flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-slate-900 px-4 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50">
                 <!-- Download Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span id="export-text">Export to PDF</span>
+                <span id="export-text">ส่งออกเป็น PDF</span>
             </button>
         </div>
     </header>
@@ -44,19 +44,19 @@
             <div id="upload-view" class="flex-1 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-slate-800/50 relative overflow-hidden group hover:border-yellow-500 transition-colors">
                 <input type="file" accept="image/*" class="file-upload-input absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                 <svg class="text-yellow-500 mb-4 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <h2 class="text-2xl font-bold text-slate-200 mb-2">Upload Slide Image</h2>
-                <p class="text-slate-400 text-center max-w-md">Drop your cross-section image here or click to browse. Supported formats: JPG, PNG.</p>
+                <h2 class="text-2xl font-bold text-slate-200 mb-2">อัปโหลดรูปภาพสไลด์</h2>
+                <p class="text-slate-400 text-center max-w-md">ลากและวางรูปภาพสไลด์ของคุณที่นี่ หรือคลิกเพื่อเลือกไฟล์ รองรับไฟล์ JPG, PNG</p>
             </div>
 
             <!-- Annotator View -->
             <div id="annotator-view" class="hide flex flex-col items-center justify-center flex-1">
                 <!-- Toolbar -->
                 <div class="bg-slate-800 border border-slate-700 rounded-full p-2 flex gap-2 mb-4 shadow-xl">
-                    <button id="btn-pointer" class="bg-yellow-500 text-slate-900 p-2 rounded-full transition-colors flex items-center justify-center" title="Select & Move (V)">
+                    <button id="btn-pointer" class="bg-yellow-500 text-slate-900 p-2 rounded-full transition-colors flex items-center justify-center" title="เลือกและย้าย (V)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 4 7.07 17 2.51-7.39L21 11.07z"/><path d="m13 13 6 6"/></svg>
                     </button>
                     <div class="w-px bg-slate-700 mx-1"></div>
-                    <button id="btn-add" class="text-slate-400 hover:text-slate-200 hover:bg-slate-700 p-2 rounded-full transition-colors flex items-center justify-center" title="Add Label (Click on image)">
+                    <button id="btn-add" class="text-slate-400 hover:text-slate-200 hover:bg-slate-700 p-2 rounded-full transition-colors flex items-center justify-center" title="เพิ่มป้ายกำกับ (คลิกบนรูปภาพ)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                     </button>
                 </div>
@@ -85,17 +85,35 @@
 
         <!-- Right Sidebar -->
         <div class="w-80 bg-slate-950 border-l border-slate-800 flex flex-col shrink-0">
+            <!-- Slide Information -->
+            <div class="p-4 border-b border-slate-800 space-y-4">
+                <h2 class="font-semibold text-slate-100 flex items-center gap-2">
+                    <svg class="text-yellow-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    ข้อมูลสไลด์
+                </h2>
+                <div class="space-y-3">
+                    <div>
+                        <label for="input-annotator" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ชื่อผู้ทำเครื่องหมาย</label>
+                        <input id="input-annotator" type="text" placeholder="ดร. สมชาย ใจดี" class="w-full bg-slate-900 border border-slate-800 text-sm text-slate-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all">
+                    </div>
+                    <div>
+                        <label for="input-specimen" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">รายละเอียดตัวอย่าง</label>
+                        <input id="input-specimen" type="text" placeholder="เช่น เนื้อเยื่อหัวหอม, 400x" class="w-full bg-slate-900 border border-slate-800 text-sm text-slate-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all">
+                    </div>
+                </div>
+            </div>
+
             <div class="p-4 border-b border-slate-800">
                 <h2 class="font-semibold text-slate-100 flex items-center gap-2">
                     <svg class="text-yellow-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="19 9 22 12 19 15"/><polyline points="9 19 12 22 15 19"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-                    Labels (<span id="label-count">0</span>)
+                    ป้ายกำกับ (<span id="label-count">0</span>)
                 </h2>
-                <p class="text-xs text-slate-400 mt-1">Use the + tool above the image to click and add targets.</p>
+                <p class="text-xs text-slate-400 mt-1">ใช้เครื่องมือ + ด้านบนคลิกบนรูปภาพเพื่อระบุตำแหน่งเป้าหมาย</p>
             </div>
             
             <div id="sidebar-list" class="flex-1 overflow-y-auto p-4 space-y-3">
                 <div id="sidebar-empty" class="text-center p-6 border border-dashed border-slate-800 rounded-xl text-slate-500 text-sm">
-                    No labels added yet.
+                    ยังไม่มีการเพิ่มป้ายกำกับ
                 </div>
                 <!-- Sidebar inputs injected via JS -->
             </div>
@@ -104,7 +122,7 @@
                 <div class="relative">
                     <input type="file" accept="image/*" class="file-upload-input absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                     <button class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm rounded-lg border border-slate-700 transition-colors flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Replace Image
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> เปลี่ยนรูปภาพ
                     </button>
                 </div>
             </div>
@@ -205,7 +223,7 @@
                 targetY: y,
                 textX: Math.min(x + 15, 90),
                 textY: Math.max(y - 15, 5),
-                text: 'New Label'
+                text: 'ป้ายกำกับใหม่'
             };
 
             labels.push(newLabel);
@@ -324,12 +342,12 @@
                 const itemHTML = `
                     <div id="sidebar-card-${l.id}" class="sidebar-item bg-slate-900 border border-slate-700 rounded-lg p-3 flex flex-col gap-2 group hover:border-slate-600 transition-colors">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Label ${index + 1}</span>
-                            <button class="delete-btn text-slate-500 hover:text-red-400 transition-colors" data-id="${l.id}" title="Delete label">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">ป้ายกำกับที่ ${index + 1}</span>
+                            <button class="delete-btn text-slate-500 hover:text-red-400 transition-colors" data-id="${l.id}" title="ลบป้ายกำกับ">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                             </button>
                         </div>
-                        <input id="sidebar-input-${l.id}" type="text" value="${l.text}" data-id="${l.id}" placeholder="Enter label text..." class="sidebar-input bg-slate-950 border border-slate-800 text-sm text-slate-200 rounded p-2 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all w-full">
+                        <input id="sidebar-input-${l.id}" type="text" value="${l.text}" data-id="${l.id}" placeholder="กรอกข้อความป้ายกำกับ..." class="sidebar-input bg-slate-950 border border-slate-800 text-sm text-slate-200 rounded p-2 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all w-full">
                     </div>
                 `;
                 sidebarList.insertAdjacentHTML('beforeend', itemHTML);
@@ -379,7 +397,7 @@
             if (!imageSrc || (labels.length === 0)) return;
             
             btnExport.disabled = true;
-            exportText.textContent = 'Exporting...';
+            exportText.textContent = 'กำลังส่งออก...';
 
             try {
                 const displayedWidth = mainImage.clientWidth;
@@ -390,24 +408,27 @@
                 img.src = imageSrc;
                 await new Promise((resolve) => { img.onload = resolve; });
 
-                // Create an offscreen canvas at full original resolution
+                const scale = img.width / displayedWidth;
+                const footerHeight = 85 * scale; 
+
+                // Create an offscreen canvas at full original resolution + footer height
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width;
-                canvas.height = img.height;
+                canvas.height = img.height + footerHeight;
                 const ctx = canvas.getContext('2d');
 
                 // 1. Draw base image
                 ctx.drawImage(img, 0, 0);
 
-                // 2. Scale annotations so they match relative screen size perfectly
-                const scale = img.width / displayedWidth;
+                const imgWidth = img.width;
+                const imgHeight = img.height;
 
-                // 3. Draw Lines and Labels directly onto canvas pixels
+                // 2. Draw Lines and Labels directly onto canvas pixels
                 labels.forEach(l => {
-                    const tx = (l.targetX / 100) * canvas.width;
-                    const ty = (l.targetY / 100) * canvas.height;
-                    const textX = (l.textX / 100) * canvas.width;
-                    const textY = (l.textY / 100) * canvas.height;
+                    const tx = (l.targetX / 100) * imgWidth;
+                    const ty = (l.targetY / 100) * imgHeight;
+                    const textX = (l.textX / 100) * imgWidth;
+                    const textY = (l.textY / 100) * imgHeight;
 
                     // Draw Line
                     ctx.save();
@@ -469,6 +490,57 @@
                     ctx.fillText(textStr, textX, textY + (1 * scale));
                 });
 
+                // 3. Draw Footer Banner
+                const annotatorName = document.getElementById('input-annotator').value.trim() || 'ไม่ระบุ';
+                const specimenDetails = document.getElementById('input-specimen').value.trim() || 'ไม่ระบุ';
+
+                ctx.fillStyle = '#0b0f19'; 
+                ctx.fillRect(0, imgHeight, imgWidth, footerHeight);
+
+                // Yellow Divider Line at top of footer
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 2 * scale;
+                ctx.beginPath();
+                ctx.moveTo(0, imgHeight);
+                ctx.lineTo(imgWidth, imgHeight);
+                ctx.stroke();
+
+                // Draw Specimen Info (Left Side)
+                ctx.save();
+                ctx.fillStyle = '#94a3b8'; 
+                ctx.font = `bold ${10 * scale}px sans-serif`;
+                ctx.textBaseline = 'top';
+                ctx.textAlign = 'left';
+                ctx.fillText('รายละเอียดตัวอย่าง', 24 * scale, imgHeight + 20 * scale);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold ${16 * scale}px sans-serif`;
+                ctx.fillText(specimenDetails, 24 * scale, imgHeight + 38 * scale);
+                ctx.restore();
+
+                // Draw Annotator Info (Right Side)
+                ctx.save();
+                ctx.fillStyle = '#94a3b8'; 
+                ctx.font = `bold ${10 * scale}px sans-serif`;
+                ctx.textBaseline = 'top';
+                ctx.textAlign = 'right';
+                ctx.fillText('ผู้ทำเครื่องหมาย', imgWidth - 24 * scale, imgHeight + 20 * scale);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold ${16 * scale}px sans-serif`;
+                ctx.fillText(annotatorName, imgWidth - 24 * scale, imgHeight + 38 * scale);
+
+                // Date below Annotator Name
+                const dateString = new Date().toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                ctx.fillStyle = '#64748b'; 
+                ctx.font = `${10 * scale}px sans-serif`;
+                ctx.fillText(dateString, imgWidth - 24 * scale, imgHeight + 58 * scale);
+                ctx.restore();
+
                 // 4. Generate PDF from pristine Canvas
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pdf = new window.jspdf.jsPDF({
@@ -482,10 +554,10 @@
 
             } catch (err) {
                 console.error("Export failed:", err);
-                alert("Failed to export PDF. Please try again.");
+                alert("ไม่สามารถส่งออก PDF ได้ กรุณาลองใหม่อีกครั้ง");
             } finally {
                 btnExport.disabled = false;
-                exportText.textContent = 'Export to PDF';
+                exportText.textContent = 'ส่งออกเป็น PDF';
             }
         });
     </script>
