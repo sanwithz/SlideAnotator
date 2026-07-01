@@ -891,17 +891,17 @@
             try {
                 const wrapper = document.getElementById('image-preview-wrapper');
                 
-                // Hide dynamic drag targets (knobs) temporarily to keep output clean
-                const dragTargets = document.querySelectorAll('.drag-target');
-                dragTargets.forEach(el => el.classList.add('hide'));
+                // Hide dynamic drag targets (knobs) and grip handles temporarily to keep output clean
+                const dragElements = document.querySelectorAll('.drag-target, .grip');
+                dragElements.forEach(el => el.classList.add('hide'));
                 
                 const dataUrl = await modernScreenshot.domToPng(wrapper, {
                     scale: 2, // Double resolution for ultra-sharp prints/slides
                     backgroundColor: '#0f172a'
                 });
 
-                // Restore drag targets
-                dragTargets.forEach(el => el.classList.remove('hide'));
+                // Restore drag targets and grip handles
+                dragElements.forEach(el => el.classList.remove('hide'));
 
                 const link = document.createElement('a');
                 link.download = 'annotated-slide.png';
