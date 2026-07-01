@@ -51,7 +51,7 @@
             </div>
 
             <!-- Annotator View -->
-            <div id="annotator-view" class="hide flex flex-col items-center justify-center flex-1">
+            <div id="annotator-view" class="hide flex flex-col items-center justify-center flex-1 w-full">
                 <!-- Toolbar -->
                 <div class="bg-slate-800 border border-slate-700 rounded-full p-2 flex gap-2 mb-4 shadow-xl">
                     <button id="btn-pointer" class="bg-yellow-500 text-slate-900 p-2 rounded-full transition-colors flex items-center justify-center" title="เลือกและย้าย (V)">
@@ -67,23 +67,39 @@
                     </button>
                 </div>
 
-                <!-- The Image Container -->
-                <div id="export-container" class="relative inline-block max-w-full shadow-2xl bg-white">
-                    <img id="main-image" alt="Microscopy slide" class="max-w-full max-h-[70vh] object-contain block" draggable="false" />
-                    
-                    <!-- SVG Overlay for UI Lines -->
-                    <svg id="svg-lines" class="absolute inset-0 w-full h-full pointer-events-none z-10">
-                        <defs>
-                            <filter id="shadow">
-                                <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000000" floodOpacity="0.8"/>
-                            </filter>
-                        </defs>
-                        <!-- Lines injected via JS -->
-                    </svg>
+                <!-- Wrapper to align image and its preview banner width -->
+                <div class="flex flex-col items-stretch max-w-full">
+                    <!-- The Image Container -->
+                    <div id="export-container" class="relative inline-block max-w-full shadow-2xl bg-white">
+                        <img id="main-image" alt="Microscopy slide" class="max-w-full max-h-[70vh] object-contain block" draggable="false" />
+                        
+                        <!-- SVG Overlay for UI Lines -->
+                        <svg id="svg-lines" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                            <defs>
+                                <filter id="shadow">
+                                    <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000000" floodOpacity="0.8"/>
+                                </filter>
+                            </defs>
+                            <!-- Lines injected via JS -->
+                        </svg>
 
-                    <!-- HTML Overlay for UI Interactions -->
-                    <div id="html-overlay" class="absolute inset-0 w-full h-full pointer-events-none z-20">
-                        <!-- Targets and boxes injected via JS -->
+                        <!-- HTML Overlay for UI Interactions -->
+                        <div id="html-overlay" class="absolute inset-0 w-full h-full pointer-events-none z-20">
+                            <!-- Targets and boxes injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Live Slide Info Preview Banner -->
+                    <div id="screen-footer-banner" class="hide bg-[#0b0f19] border-t-2 border-yellow-400 p-3 mt-2 flex justify-between items-center text-xs shadow-xl rounded-b-lg">
+                        <div class="flex flex-col gap-0.5 text-left">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">รายละเอียดตัวอย่าง</span>
+                            <span id="preview-specimen" class="text-sm font-semibold text-white">ไม่ระบุ</span>
+                        </div>
+                        <div class="flex flex-col gap-0.5 text-right">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ผู้ทำเครื่องหมาย</span>
+                            <span id="preview-annotator" class="text-sm font-semibold text-white font-bold">ไม่ระบุ</span>
+                            <span id="preview-date" class="text-[9px] text-slate-500"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,6 +179,32 @@
         const btnExport = document.getElementById('btn-export');
         const exportText = document.getElementById('export-text');
 
+        // Preview Banner Elements
+        const inputAnnotator = document.getElementById('input-annotator');
+        const inputSpecimen = document.getElementById('input-specimen');
+        const previewAnnotator = document.getElementById('preview-annotator');
+        const previewSpecimen = document.getElementById('preview-specimen');
+        const previewDate = document.getElementById('preview-date');
+        const screenFooterBanner = document.getElementById('screen-footer-banner');
+
+        function updatePreviewBanner() {
+            const annotatorName = inputAnnotator.value.trim() || 'ไม่ระบุ';
+            const specimenDetails = inputSpecimen.value.trim() || 'ไม่ระบุ';
+            
+            previewAnnotator.textContent = annotatorName;
+            previewSpecimen.textContent = specimenDetails;
+            
+            const dateString = new Date().toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            previewDate.textContent = dateString;
+        }
+
+        inputAnnotator.addEventListener('input', updatePreviewBanner);
+        inputSpecimen.addEventListener('input', updatePreviewBanner);
+
         // Setup File Uploaders
         fileInputs.forEach(input => {
             input.addEventListener('change', (e) => {
@@ -179,7 +221,9 @@
                         annotatorView.classList.remove('hide');
                         sidebarFooter.classList.remove('hide');
                         btnExport.classList.remove('hide');
+                        screenFooterBanner.classList.remove('hide');
                         
+                        updatePreviewBanner();
                         setActiveTool('pointer');
                         renderLabels();
                     };
