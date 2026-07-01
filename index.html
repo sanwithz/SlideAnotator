@@ -594,6 +594,12 @@
         // Export to PDF using perfectly aligned Native Canvas
         btnExport.addEventListener('click', async () => {
             if (!imageSrc || (labels.length === 0)) return;
+
+            // Open blank tab immediately to bypass browser popup blockers
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                newWindow.document.write('<div style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background-color:#0f172a;color:#e2e8f0;"><span style="font-size:1.25rem;font-weight:bold;">กำลังสร้างไฟล์ PDF...</span></div>');
+            }
             
             btnExport.disabled = true;
             exportText.textContent = 'กำลังส่งออก...';
@@ -790,10 +796,19 @@
                 });
 
                 pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-                pdf.save('annotated-slide.pdf');
+                
+                const blob = pdf.output('blob');
+                const blobUrl = URL.createObjectURL(blob);
+                
+                if (newWindow) {
+                    newWindow.location.href = blobUrl;
+                } else {
+                    window.open(blobUrl, '_blank');
+                }
 
             } catch (err) {
                 console.error("Export failed:", err);
+                if (newWindow) newWindow.close();
                 alert("ไม่สามารถส่งออก PDF ได้ กรุณาลองใหม่อีกครั้ง");
             } finally {
                 btnExport.disabled = false;
