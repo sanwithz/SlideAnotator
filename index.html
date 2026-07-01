@@ -789,13 +789,24 @@
 
                 // 4. Generate PDF from pristine Canvas
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                
+                // Scale PDF page format size to prevent iOS Safari PDF viewer clipping limits
+                const maxPdfWidth = 1200;
+                let pdfWidth = canvas.width;
+                let pdfHeight = canvas.height;
+                if (pdfWidth > maxPdfWidth) {
+                    const ratio = maxPdfWidth / pdfWidth;
+                    pdfWidth = maxPdfWidth;
+                    pdfHeight = pdfHeight * ratio;
+                }
+
                 const pdf = new window.jspdf.jsPDF({
-                    orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
+                    orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
+                    unit: 'pt',
+                    format: [pdfWidth, pdfHeight]
                 });
 
-                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 
                 const blob = pdf.output('blob');
                 const blobUrl = URL.createObjectURL(blob);
