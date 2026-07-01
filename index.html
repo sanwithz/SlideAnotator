@@ -219,23 +219,47 @@
         btnAdd.addEventListener('click', () => setActiveTool('add'));
         btnBracket.addEventListener('click', () => setActiveTool('bracket'));
 
-        // Handle Image Click/Drag (Add Label & Bracket)
-        exportContainer.addEventListener('mousedown', (e) => {
+        // Helper to resolve coordinates across Mouse & Touch events
+        function getEventCoords(e) {
+            const rect = exportContainer.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else if (e.changedTouches && e.changedTouches.length > 0) {
+                clientX = e.changedTouches[0].clientX;
+                clientY = e.changedTouches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: ((clientX - rect.left) / rect.width) * 100,
+                y: ((clientY - rect.top) / rect.height) * 100
+            };
+        }
+
+        // Handle Image Drag-to-Start (Add Label & Bracket)
+        function handleStart(e) {
+            // Ignore if clicking/touching on existing UI
+            if (e.target.tagName.toLowerCase() === 'input' || e.target.closest('.label-box') || e.target.closest('.drag-target')) return;
+
+            const isTouch = e.type.startsWith('touch');
+            
             if (activeTool === 'bracket') {
-                if (e.target.tagName.toLowerCase() === 'input' || e.target.closest('.label-box') || e.target.closest('.drag-target')) return;
-                
-                const rect = exportContainer.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                if (isTouch) e.preventDefault(); // prevent viewport scrolling while drawing bracket
+                const coords = getEventCoords(e);
 
                 drawingBracket = {
                     id: Date.now().toString(),
                     type: 'bracket',
-                    bracketX: x,
-                    bracketY1: y,
-                    bracketY2: y,
-                    textX: Math.min(x + 15, 90),
-                    textY: y,
+                    bracketX: coords.x,
+                    bracketY1: coords.y,
+                    bracketY2: coords.y,
+                    textX: Math.min(coords.x + 15, 90),
+                    textY: coords.y,
                     text: 'ป้ายกำกับใหม่'
                 };
 
@@ -245,35 +269,35 @@
             }
 
             if (activeTool !== 'add') return;
-            
-            // Ignore if clicking on existing UI
-            if (e.target.tagName.toLowerCase() === 'input' || e.target.closest('.label-box') || e.target.closest('.drag-target')) return;
 
-            const rect = exportContainer.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            const coords = getEventCoords(e);
 
             const newLabel = {
                 id: Date.now().toString(),
                 type: 'point',
-                targetX: x,
-                targetY: y,
-                textX: Math.min(x + 15, 90),
-                textY: Math.max(y - 15, 5),
+                targetX: coords.x,
+                targetY: coords.y,
+                textX: Math.min(coords.x + 15, 90),
+                textY: Math.max(coords.y - 15, 5),
                 text: 'ป้ายกำกับใหม่'
             };
 
             labels.push(newLabel);
             renderLabels();
             setActiveTool('pointer');
-        });
+        }
 
-        // Global Drag Listeners
-        window.addEventListener('mousemove', (e) => {
+        exportContainer.addEventListener('mousedown', handleStart);
+        exportContainer.addEventListener('touchstart', handleStart, { passive: false });
+
+        // Global Drag Listeners (Unified Mouse & Touch)
+        function handleMove(e) {
+            const isTouch = e.type.startsWith('touch');
+
             if (drawingBracket) {
-                const rect = exportContainer.getBoundingClientRect();
-                let y = ((e.clientY - rect.top) / rect.height) * 100;
-                y = Math.max(0, Math.min(100, y));
+                if (isTouch) e.preventDefault(); // prevent vertical scrolling
+                const coords = getEventCoords(e);
+                let y = Math.max(0, Math.min(100, coords.y));
 
                 drawingBracket.bracketY2 = y;
                 drawingBracket.textY = (drawingBracket.bracketY1 + y) / 2;
@@ -284,12 +308,10 @@
 
             if (!dragState.id) return;
 
-            const rect = exportContainer.getBoundingClientRect();
-            let x = ((e.clientX - rect.left) / rect.width) * 100;
-            let y = ((e.clientY - rect.top) / rect.height) * 100;
-
-            x = Math.max(0, Math.min(100, x));
-            y = Math.max(0, Math.min(100, y));
+            if (isTouch) e.preventDefault(); // prevent scroll container dragging
+            const coords = getEventCoords(e);
+            let x = Math.max(0, Math.min(100, coords.x));
+            let y = Math.max(0, Math.min(100, coords.y));
 
             const l = labels.find(lb => lb.id === dragState.id);
             if (!l) return;
@@ -309,9 +331,12 @@
             }
 
             updateDOMForLabelPosition(l);
-        });
+        }
 
-        window.addEventListener('mouseup', () => {
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchmove', handleMove, { passive: false });
+
+        function handleEnd() {
             if (drawingBracket) {
                 const y1 = drawingBracket.bracketY1;
                 const y2 = drawingBracket.bracketY2;
@@ -327,7 +352,11 @@
             }
             dragState = { id: null, type: null };
             document.body.classList.remove('cursor-grabbing');
-        });
+        }
+
+        window.addEventListener('mouseup', handleEnd);
+        window.addEventListener('touchend', handleEnd);
+        window.addEventListener('touchcancel', handleEnd);
 
         // Direct DOM Update to prevent focus loss during typing/dragging
         function updateDOMForLabelPosition(l) {
@@ -522,7 +551,7 @@
 
             // Re-attach Event Listeners for new DOM elements
             document.querySelectorAll('.drag-handle').forEach(handle => {
-                handle.addEventListener('mousedown', (e) => {
+                const handleDragStart = (e) => {
                     e.stopPropagation();
                     if (activeTool !== 'pointer') return;
                     dragState = {
@@ -530,7 +559,9 @@
                         type: handle.getAttribute('data-type')
                     };
                     document.body.classList.add('cursor-grabbing');
-                });
+                };
+                handle.addEventListener('mousedown', handleDragStart);
+                handle.addEventListener('touchstart', handleDragStart, { passive: true });
             });
 
             document.querySelectorAll('.overlay-input, .sidebar-input').forEach(input => {
@@ -544,6 +575,7 @@
                 
                 // Prevent drag initiation on text inputs
                 input.addEventListener('mousedown', (e) => e.stopPropagation());
+                input.addEventListener('touchstart', (e) => e.stopPropagation());
             });
 
             document.querySelectorAll('.delete-btn').forEach(btn => {
