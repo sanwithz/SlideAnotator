@@ -823,12 +823,16 @@
                 ctx.fillStyle = '#94a3b8'; 
                 ctx.font = `bold ${10 * scale}px sans-serif`;
                 ctx.textBaseline = 'top';
-                ctx.textAlign = 'right';
-                ctx.fillText('ผู้ทำเครื่องหมาย', imgWidth - 24 * scale, imgHeight + 20 * scale);
+                ctx.textAlign = 'left';
+                
+                const annotatorLabelText = 'ผู้ทำเครื่องหมาย';
+                const annotatorLabelWidth = ctx.measureText(annotatorLabelText).width;
+                ctx.fillText(annotatorLabelText, imgWidth - 24 * scale - annotatorLabelWidth, imgHeight + 20 * scale);
 
                 ctx.fillStyle = '#ffffff';
                 ctx.font = `bold ${16 * scale}px sans-serif`;
-                ctx.fillText(annotatorName, imgWidth - 24 * scale, imgHeight + 38 * scale);
+                const nameWidth = ctx.measureText(annotatorName).width;
+                ctx.fillText(annotatorName, imgWidth - 24 * scale - nameWidth, imgHeight + 38 * scale);
 
                 // Date below Annotator Name
                 const dateString = new Date().toLocaleDateString('th-TH', {
@@ -838,7 +842,8 @@
                 });
                 ctx.fillStyle = '#64748b'; 
                 ctx.font = `${10 * scale}px sans-serif`;
-                ctx.fillText(dateString, imgWidth - 24 * scale, imgHeight + 58 * scale);
+                const dateWidth = ctx.measureText(dateString).width;
+                ctx.fillText(dateString, imgWidth - 24 * scale - dateWidth, imgHeight + 58 * scale);
                 ctx.restore();
 
                 // 4. Generate PDF from pristine Canvas
